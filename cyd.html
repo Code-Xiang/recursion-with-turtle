@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>陈雨蝶</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Zhi Mang Xing',cursive;
+  background:#000;
+  color:var(--main);
+  transition:background 1s;
+}
+
+.name{
+  font-size:90px;
+  cursor:pointer;
+  text-shadow:0 0 30px var(--glow);
+  animation:breathe 3s infinite;
+  z-index:10;
+}
+
+@keyframes breathe{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+}
+
+.love-text{
+  position:absolute;
+  bottom:18%;
+  font-size:26px;
+  opacity:0;
+  animation:fade 3s forwards;
+}
+
+@keyframes fade{
+  0%{opacity:0;transform:translateY(10px)}
+  20%{opacity:1}
+  100%{opacity:0;transform:translateY(-10px)}
+}
+
+.big{
+  position:absolute;
+  font-size:140px;
+  animation:pop 1s forwards;
+}
+
+@keyframes pop{
+  0%{transform:scale(0);opacity:0}
+  40%{transform:scale(1.4);opacity:1}
+  100%{opacity:0}
+}
+
+.p{
+  position:absolute;
+  font-size:26px;
+  animation:fly 2s forwards;
+}
+
+@keyframes fly{
+  to{
+    transform:translate(var(--x),var(--y)) rotate(360deg) scale(.3);
+    opacity:0
+  }
+}
+
+.confession{
+  position:absolute;
+  font-size:42px;
+  opacity:0;
+  animation:confess 4s forwards;
+}
+
+@keyframes confess{
+  0%{opacity:0;transform:scale(.8)}
+  20%{opacity:1}
+  80%{opacity:1}
+  100%{opacity:0;transform:scale(1.2)}
+}
+</style>
+</head>
+
+<body style="--main:#ff9acb;--glow:#ff4fa3">
+
+<div class="name" id="name">陈雨蝶</div>
+
+<audio id="bgm" loop>
+  <source src="https://cdn.pixabay.com/audio/2022/10/30/audio_28c5a8b88d.mp3">
+</audio>
+
+<script>
+const nameEl = document.getElementById("name")
+const bgm = document.getElementById("bgm")
+
+const loveWords = [
+ "遇见你，是我一生的浪漫",
+ "你一出现，世界就温柔了",
+ "我想把所有温柔都给你",
+ "你是我心里唯一的答案",
+ "余生很长，我只想陪你"
+]
+
+const particles = ["🌸","🦋","⭐"]
+const backgrounds = [
+ "radial-gradient(circle at top,#001,#000)",        // 星空
+ "linear-gradient(#ffd1dc,#000)",                   // 樱花
+ "radial-gradient(circle at center,#3f1c7a,#000)"   // 银河
+]
+
+let bgIndex = 0
+let confessionMode = false
+
+// 情人节 / 纪念日判断
+const today = new Date()
+if (today.getMonth()==1 && today.getDate()==14){
+ document.body.style.setProperty("--main","#ff3366")
+ document.body.style.setProperty("--glow","#ff0033")
+}
+
+function explode(count=30){
+ const r = nameEl.getBoundingClientRect()
+ const cx = r.left + r.width/2
+ const cy = r.top + r.height/2
+
+ const big = document.createElement("div")
+ big.className="big"
+ big.innerText="❤"
+ big.style.left=cx-70+"px"
+ big.style.top=cy-70+"px"
+ document.body.appendChild(big)
+ setTimeout(()=>big.remove(),1000)
+
+ for(let i=0;i<count;i++){
+  const p=document.createElement("div")
+  p.className="p"
+  p.innerText=particles[Math.random()*particles.length|0]
+  p.style.left=cx+"px"
+  p.style.top=cy+"px"
+  p.style.setProperty("--x",(Math.random()-.5)*500+"px")
+  p.style.setProperty("--y",(Math.random()-.5)*500+"px")
+  document.body.appendChild(p)
+  setTimeout(()=>p.remove(),2000)
+ }
+
+ const txt=document.createElement("div")
+ txt.className="love-text"
+ txt.innerText=loveWords[Math.random()*loveWords.length|0]
+ document.body.appendChild(txt)
+ setTimeout(()=>txt.remove(),3000)
+}
+
+nameEl.addEventListener("click",()=>{
+ if(bgm.paused) bgm.play()
+ if(navigator.vibrate) navigator.vibrate(40)
+
+ bgIndex=(bgIndex+1)%backgrounds.length
+ document.body.style.background=backgrounds[bgIndex]
+ explode(confessionMode?60:30)
+})
+
+nameEl.addEventListener("dblclick",()=>{
+ confessionMode=true
+ const c=document.createElement("div")
+ c.className="confession"
+ c.innerText="我喜欢你 ❤️"
+ document.body.appendChild(c)
+ setTimeout(()=>{confessionMode=false;c.remove()},4000)
+})
+</script>
+
+</body>
+</html>
